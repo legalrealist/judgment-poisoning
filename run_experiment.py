@@ -56,19 +56,27 @@ def step_download(custodians: list[str]):
 
 
 def step_parse():
-    print("TODO: Parse EDRM XML files from corpus/enron/raw/ into corpus/enron/parsed/")
-    print("Each custodian becomes a JSON file with list of EnronEmail dicts.")
+    """Parse downloaded Enron XML files into structured email objects."""
+    from src.enron_corpus import parse_custodian_zip, save_parsed_corpus
+
+    ENRON_PARSED.mkdir(parents=True, exist_ok=True)
+    for zip_file in sorted(ENRON_RAW.glob("*.zip")):
+        custodian = zip_file.stem  # e.g., edrm-enron-v2_allen-p_xml
+        output_path = ENRON_PARSED / f"{custodian}.json"
+        if output_path.exists():
+            print(f"Already parsed: {custodian}")
+            continue
+        print(f"Parsing {custodian}...")
+        emails = parse_custodian_zip(zip_file)
+        save_parsed_corpus(emails, output_path)
+        print(f"  -> {len(emails)} emails saved to {output_path}")
 
 
 def step_conditions(topic_id: str):
     print(f"Building conditions for topic {topic_id}...")
-    parsed_dir = ENRON_PARSED
-    corpus = {}
-    for f in parsed_dir.glob("*.json"):
-        with open(f) as fh:
-            emails = json.load(fh)
-            for e in emails:
-                corpus[e["doc_id"]] = EnronEmail(**e)
+    from src.enron_corpus import load_parsed_corpus
+
+    corpus = load_parsed_corpus(ENRON_PARSED)
 
     qrels_path = CORPUS_DIR / "enron" / "trec_judgments" / "qrels.txt"
     with open(qrels_path) as f:
@@ -125,11 +133,9 @@ def step_embed(model_name: str):
             data = json.load(f)
             all_doc_ids.update(data["doc_ids"])
 
-    corpus = {}
-    for f in ENRON_PARSED.glob("*.json"):
-        with open(f) as fh:
-            for e in json.load(fh):
-                corpus[e["doc_id"]] = EnronEmail(**e)
+    from src.enron_corpus import load_parsed_corpus
+
+    corpus = load_parsed_corpus(ENRON_PARSED)
 
     doc_ids = sorted(all_doc_ids & set(corpus.keys()))
     texts = [corpus[d].to_text() for d in doc_ids]
