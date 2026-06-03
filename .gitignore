@@ -1,0 +1,16 @@
+# Data (too large for git)
+corpus/enron/raw/
+corpus/enron/parsed/
+embeddings/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Results (regenerable)
+results/
+
+# Environment
+.env
