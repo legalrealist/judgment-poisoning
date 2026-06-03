@@ -4,7 +4,7 @@
 
 ### Overview
 
-Haystacking is a security research project testing whether strategic over-production of authentic documents in litigation discovery can bury key evidence in AI-assisted document review. The attack mechanism exploits dense retrieval systems: by flooding the corpus with topically related documents, an adversary dilutes the semantic signal of damaging evidence.
+Haystacking is a security research project testing whether strategic over-production of authentic documents in litigation discovery can bury key evidence in the retrieval layer of AI-assisted document review. The attack mechanism exploits dense retrieval systems: by flooding the corpus with topically related documents, an adversary dilutes the semantic signal of damaging evidence.
 
 This is not prompt injection, parser differential, document fabrication, or withholding. Every document in the production is authentic — real business records from the producing party's archives, not adversarially crafted or optimized text. The attack controls which documents surface, not what they say.
 
