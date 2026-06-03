@@ -189,9 +189,21 @@ Can a defender recover key documents even in a haystacked corpus?
 
 ---
 
-## Secondary LLM test
+## Scope: retrieval layer only
 
-After the embedding experiments, upload selected conditions to Claude Projects / ChatGPT / Gemini and prompt: "Identify the 5 most important documents in this production." Compare key document lists across conditions. This tests whether haystacking survives into the summarization layer, not just the retrieval layer.
+This experiment tests the retrieval layer in isolation — cosine similarity ranking on dense embeddings. Production eDiscovery systems typically have additional layers that could mitigate or defeat a retrieval-layer attack:
+
+- **Cross-encoder reranking** — rerankers that score (query, document) pairs directly are better at distinguishing "discusses client lists routinely" from "discusses stealing client lists" and could rescue smoking guns from lower ranks
+- **Summarization / LLM layer** — if an LLM reviews the top-K retrieved documents, it may recognize that the retrieved set is mostly noise and request a wider search, or identify the smoking guns within a mixed set
+- **Full-context analysis** — for small enough corpora, an LLM could bypass retrieval entirely and analyze all documents directly
+
+If the attack works at the retrieval layer but gets defeated by reranking or summarization, that's still a finding — it identifies which component of the pipeline is vulnerable. But it means the headline claim is "dense retrieval is vulnerable to haystacking," not "AI-assisted review is vulnerable to haystacking."
+
+The results should be framed accordingly: this is a retrieval-layer vulnerability study. Whether the vulnerability survives into end-to-end eDiscovery workflows is a separate question.
+
+## Secondary LLM test (future work)
+
+A more rigorous follow-up would test the full RAG pipeline: retrieve top-K → rerank → feed to LLM → ask for key documents. This project does not implement that pipeline but suggests it as the natural next step. A preliminary test — uploading selected conditions to Claude Projects / ChatGPT / Gemini and prompting "Identify the 5 most important documents" — can provide directional evidence on whether haystacking survives the summarization layer, but should not be treated as a controlled experiment.
 
 ---
 
@@ -250,7 +262,7 @@ haystacking/
 
 **Enron is a single corpus from a single era.** All documents are emails from one company (2000-2002). No document type diversity (no contracts, depositions, spreadsheets). Language patterns and communication styles differ from modern corporate email. The topics relate to energy trading and regulatory matters, which may not generalize to all litigation domains. Replication on other public corpora or real productions under appropriate ethical protections would strengthen the findings.
 
-**Cosine similarity is a proxy, not the real pipeline.** Production eDiscovery platforms use hybrid retrieval — BM25 + dense embeddings + reranking + metadata filters (date ranges, custodians, document types). Raw cosine similarity on embeddings is the most testable component but does not capture the full retrieval stack. Results may overstate or understate the effect depending on how platforms combine signals.
+**Retrieval layer only.** This experiment tests dense embedding retrieval in isolation. Production eDiscovery platforms add cross-encoder reranking, BM25 hybrid search, metadata filters, and LLM summarization on top of the retrieval layer. Any of these could mitigate or defeat the attack. The results demonstrate a retrieval-layer vulnerability, not an end-to-end workflow vulnerability. Whether haystacking survives through reranking and summarization is the most important open question for follow-up work.
 
 **Scale.** The Enron corpus is large (1.7M emails) but the TREC relevance judgments cover a finite set of assessed documents per topic. The experiment can test at larger scale than a synthetic corpus, but "true production scale" testing depends on having enough assessed documents per topic.
 
