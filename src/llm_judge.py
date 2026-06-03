@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -74,36 +75,56 @@ def _get_openai_client():
     return openai.OpenAI()
 
 
+def _call_with_retry(fn, max_retries=5):
+    for attempt in range(max_retries):
+        try:
+            return fn()
+        except Exception as e:
+            if "rate_limit" in str(e).lower() or "429" in str(e):
+                wait = 30 * (attempt + 1)
+                print(f"  Rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})...")
+                time.sleep(wait)
+            else:
+                raise
+    raise RuntimeError(f"Rate limited after {max_retries} retries")
+
+
 def _call_anthropic(prompt: str, model: str) -> str:
     client = _get_anthropic_client()
-    message = client.messages.create(
-        model=model,
-        max_tokens=8192,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return message.content[0].text
+    def _do():
+        message = client.messages.create(
+            model=model,
+            max_tokens=8192,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return message.content[0].text
+    return _call_with_retry(_do)
 
 
 def _call_openai(prompt: str, model: str) -> str:
     client = _get_openai_client()
-    response = client.chat.completions.create(
-        model=model,
-        max_tokens=8192,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return response.choices[0].message.content
+    def _do():
+        response = client.chat.completions.create(
+            model=model,
+            max_tokens=8192,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.choices[0].message.content
+    return _call_with_retry(_do)
 
 
 def _call_together(prompt: str, model: str) -> str:
     client = _get_openai_client()
     client.base_url = "https://api.together.xyz/v1"
     client.api_key = os.environ.get("TOGETHER_API_KEY", "")
-    response = client.chat.completions.create(
-        model=model,
-        max_tokens=8192,
-        messages=[{"role": "user", "content": prompt}],
-    )
-    return response.choices[0].message.content
+    def _do():
+        response = client.chat.completions.create(
+            model=model,
+            max_tokens=8192,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.choices[0].message.content
+    return _call_with_retry(_do)
 
 
 MODEL_BACKENDS = {
