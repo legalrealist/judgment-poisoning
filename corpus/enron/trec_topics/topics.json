@@ -1,0 +1,105 @@
+{
+  "source": "TREC Legal Track 2009-2010",
+  "topics": {
+    "201": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to the Company's engagement in structured commodity transactions known as 'prepay transactions.'",
+      "topic_authority": "Howard J. C. Nicols (Squire, Sanders, & Dempsey)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 384,
+      "assessed_count": 2720
+    },
+    "202": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to the Company's engagement in transactions that the Company characterized as compliant with FAS 140 (or its predecessor FAS 125).",
+      "topic_authority": "Michael Roman Geske (Aphelion Legal Solutions)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 996,
+      "assessed_count": 2720
+    },
+    "203": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to whether the Company had met, or could, would, or might meet its financial forecasts, models, projections, or plans at any time after January 1, 1999.",
+      "topic_authority": "David Stanton (Pillsbury Winthrop Shaw Pittman)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 481,
+      "assessed_count": 2720
+    },
+    "204": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to any intentions, plans, efforts, or activities involving the alteration, destruction, retention, lack of retention, deletion, or shredding of documents or other evidence, whether in hard-copy or electronic form.",
+      "topic_authority": "Maura Grossman (Wachtell, Lipton, Rosen & Katz)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 475,
+      "assessed_count": 2720
+    },
+    "205": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to energy schedules and bids, including but not limited to, estimates, forecasts, descriptions, characterizations, analyses, evaluations, projections, plans, and reports on the volume(s) or geographic location(s) of energy loads.",
+      "topic_authority": "Art Bieser (Hunton & Williams)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 1366,
+      "assessed_count": 2720
+    },
+    "206": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to any discussion(s), communication(s), or contact(s) with financial analyst(s), or with the firm(s) that employ them, regarding (i) the Company's financial condition, (ii) analysts' coverage of the Company and/or its financial condition, (iii) analysts' rating of the Company's stock, or (iv) the impact of an analyst's coverage of the Company on the business relationship between the Company and the firm that employs the analyst.",
+      "topic_authority": "Christopher Boehning (Paul, Weiss, Rifkind, Wharton & Garrison)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 135,
+      "assessed_count": 2720
+    },
+    "207": {
+      "year": 2009,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to fantasy football, gambling on football, and related activities, including but not limited to, football teams, football players, football games, football statistics, and football performance.",
+      "topic_authority": "K. Krasnow Waterman (LawTechIntersect)",
+      "qrels_file": "qrels.t10legallearn",
+      "relevant_count": 1294,
+      "assessed_count": 2720
+    },
+    "301": {
+      "year": 2010,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to onshore or offshore oil and gas drilling or extraction activities, whether past, present or future, actual, anticipated, possible or potential, including, but not limited to, all business and other plans relating thereto, all anticipated revenues therefrom, and all risk calculations or risk management analyses in connection therewith.",
+      "topic_authority": "Mira Edelman (Hughes Hubbard & Reed)",
+      "qrels_file": "qrel_leg_int_2010_msg_post.txt",
+      "relevant_count": 826,
+      "assessed_count": 5842
+    },
+    "302": {
+      "year": 2010,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to actual, anticipated, possible or potential responses to oil and gas spills, blowouts or releases, or pipeline eruptions, whether past, present or future, including, but not limited to, any assessment, evaluation, remediation or repair activities, contingency plans and/or environmental disaster, recovery or clean-up efforts.",
+      "topic_authority": "John F. Curran (Stroz Friedberg)",
+      "qrels_file": "qrel_leg_int_2010_msg_post.txt",
+      "relevant_count": 184,
+      "assessed_count": 5779
+    },
+    "303": {
+      "year": 2010,
+      "task": "interactive",
+      "statement": "All documents or communications that describe, discuss, refer to, report on, or relate to activities, plans or efforts (whether past, present or future) aimed, intended or directed at lobbying public or other officials regarding any actual, pending, anticipated, possible or potential legislation, including but not limited to, activities aimed, intended or directed at influencing or affecting any actual, pending, anticipated, possible or potential rule, regulation, standard, policy, law or amendment thereto.",
+      "topic_authority": "Robert E. Singleton (Squire, Sanders, & Dempsey)",
+      "qrels_file": "qrel_leg_int_2010_msg_post.txt",
+      "relevant_count": 1090,
+      "assessed_count": 7120
+    },
+    "304": {
+      "year": 2010,
+      "task": "interactive",
+      "statement": "Identify all documents or communications in the TREC Legal Track Enron Collection that are subject to a claim of privilege, attorney work-product, or other applicable protection.",
+      "topic_authority": "Michael Roman Geske (Aphelion Legal Solutions)",
+      "qrels_file": "qrel_leg_int_2010_msg_post.txt",
+      "relevant_count": 941,
+      "assessed_count": 6766,
+      "note": "Privilege review topic, not a standard request for production"
+    }
+  }
+}
