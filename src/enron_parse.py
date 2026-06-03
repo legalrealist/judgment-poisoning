@@ -1,5 +1,6 @@
 """Parse EDRM Enron v2 XML files into structured email objects."""
 
+import re
 from dataclasses import dataclass, field
 from typing import Optional
 from lxml import etree
@@ -62,12 +63,36 @@ def parse_edrm_xml_file(
         for tag in doc.iter("Tag"):
             tags[tag.get("TagName", "")] = tag.get("TagValue", "")
 
+        # Extract body from Text file type only
         body = ""
-        for ext_file in doc.iter("ExternalFile"):
-            fname = ext_file.get("FileName", "")
-            if fname in text_files:
-                body = text_files[fname]
+        for file_el in doc.iter("File"):
+            if file_el.get("FileType", "") != "Text":
+                continue
+            for ext_file in file_el.iter("ExternalFile"):
+                fname = ext_file.get("FileName", "")
+                fpath = ext_file.get("FilePath", "")
+                # Try filename alone, then path/filename
+                if fname in text_files:
+                    body = text_files[fname]
+                    break
+                combined = f"{fpath}/{fname}" if fpath else fname
+                if combined in text_files:
+                    body = text_files[combined]
+                    break
+            if body:
                 break
+
+        # Extract custodian from Locations
+        custodian: Optional[str] = None
+        custodian_el = doc.find(".//Locations/Location/Custodian")
+        if custodian_el is not None and custodian_el.text:
+            raw = custodian_el.text
+            # Extract email from angle brackets if present
+            m = re.search(r"<([^>]+)>", raw)
+            if m:
+                custodian = m.group(1)
+            else:
+                custodian = raw.strip()
 
         email = EnronEmail(
             doc_id=doc_id,
@@ -76,6 +101,7 @@ def parse_edrm_xml_file(
             subject=tags.get("#Subject", ""),
             body=body,
             date_sent=tags.get("#DateSent", ""),
+            custodian=custodian,
             cc=tags.get("#CC", ""),
             bcc=tags.get("#BCC", ""),
         )
