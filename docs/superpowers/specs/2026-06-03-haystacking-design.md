@@ -253,8 +253,7 @@ haystacking/
 8. Compute metrics and statistical tests
 9. Run detection experiment (A/B vs C distinguishability)
 10. Run mitigation experiments
-11. Run secondary LLM test on selected conditions
-12. Generate comparison tables, figures, and dose-response curves
+11. Generate comparison tables, figures, and dose-response curves
 
 ---
 
@@ -264,7 +263,7 @@ haystacking/
 
 **Retrieval layer only.** This experiment tests dense embedding retrieval in isolation. Production eDiscovery platforms add cross-encoder reranking, BM25 hybrid search, metadata filters, and LLM summarization on top of the retrieval layer. Any of these could mitigate or defeat the attack. The results demonstrate a retrieval-layer vulnerability, not an end-to-end workflow vulnerability. Whether haystacking survives through reranking and summarization is the most important open question for follow-up work.
 
-**Scale.** The Enron corpus is large (1.7M emails) but the TREC relevance judgments cover a finite set of assessed documents per topic. The experiment can test at larger scale than a synthetic corpus, but "true production scale" testing depends on having enough assessed documents per topic.
+**Scale.** The Enron corpus is large (1.7M emails) but the TREC relevance judgments cover a finite set of assessed documents per topic. The scale sweep can go up to 10× baseline per topic, but "true production scale" testing (50,000+ documents) depends on having enough assessed documents and may require extending beyond the TREC-judged subset.
 
 **Key document selection.** "Smoking guns" are identified by TREC assessor relevance grades, not by independent legal judgment of case significance. This is a reasonable proxy — TREC assessors are professional reviewers — but responsiveness is not the same as case-dispositive importance. The distinction between "highly relevant" and "smoking gun" is acknowledged.
 
