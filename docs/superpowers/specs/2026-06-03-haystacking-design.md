@@ -72,7 +72,7 @@ Select 3-5 TREC Legal Track topics that have:
 
 ### Conditions per topic
 
-For each TREC topic, build four conditions:
+For each TREC topic, build five conditions:
 
 **Baseline:** Highly relevant documents (per TREC judgments) plus a sample of responsive documents. Represents a tight, well-curated production.
 
@@ -82,7 +82,7 @@ For each TREC topic, build four conditions:
 
 **Haystacked C (embedding-optimized):** Baseline + Enron emails selected by embedding similarity to the highly relevant documents. For each highly relevant document, find the K most similar emails in the broader corpus (excluding already-responsive documents). This is the technically sophisticated attack.
 
-**Dilution control:** Baseline + Enron emails from completely unrelated custodians and topics. Same corpus size as the largest haystacked condition. Isolates the effect of topical similarity from pure corpus size increase.
+**Dilution control:** Baseline + Enron emails from completely unrelated custodians and topics. At each scale level, size-matched to that level's haystacked C condition. Isolates the effect of topical similarity from pure corpus size increase.
 
 ### Scale sweep
 
@@ -102,9 +102,9 @@ At each scale level, five conditions are tested:
 - Haystacked A (broad collection)
 - Haystacked B (keyword-aware)
 - Haystacked C (embedding-optimized)
-- Dilution control (off-topic, size-matched to C)
+- Dilution control (off-topic, size-matched to C at each scale level)
 
-The **primary comparison** is each haystacked condition vs. the size-matched dilution control. This isolates topical similarity from corpus size. If the dilution control causes the same recall drop, the finding is trivial ("bigger corpus = lower recall"). If haystacked conditions displace significantly more, topical similarity is the mechanism.
+The **primary comparison** is each haystacked condition vs. the size-matched dilution control at the same scale level. This isolates topical similarity from corpus size. If the dilution control causes the same recall drop, the finding is trivial ("bigger corpus = lower recall"). If haystacked conditions displace significantly more, topical similarity is the mechanism.
 
 The **secondary comparison** is across attacker levels (A vs. B vs. C) to show the gradient.
 
