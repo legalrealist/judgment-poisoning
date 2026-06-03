@@ -162,7 +162,7 @@ def run_ablation(
         window_ids = list(window_ids)
         window_texts = list(window_texts)
 
-        judgments = judge_batch(window_ids, window_texts, query, model, cache_dir)
+        judgments = judge_batch(window_ids, window_texts, query, model, cache_dir, no_chunk=True)
 
         key_set = set(key_doc_ids)
         hay_set = set(selected_ids)

@@ -223,6 +223,7 @@ def judge_batch(
     query: str,
     model: str,
     cache_dir: Path | None = None,
+    no_chunk: bool = False,
 ) -> list[JudgmentResult]:
     cache_dir = cache_dir or CACHE_DIR
     combined_text = "\n\n".join(
@@ -235,13 +236,16 @@ def judge_batch(
             r.doc_id = doc_ids[i]
         return cached
 
-    all_results = []
-    for start in range(0, len(doc_ids), BATCH_CHUNK_SIZE):
-        end = min(start + BATCH_CHUNK_SIZE, len(doc_ids))
-        chunk_results = _judge_batch_chunk(
-            doc_ids[start:end], doc_texts[start:end], query, model,
-        )
-        all_results.extend(chunk_results)
+    if no_chunk:
+        all_results = _judge_batch_chunk(doc_ids, doc_texts, query, model)
+    else:
+        all_results = []
+        for start in range(0, len(doc_ids), BATCH_CHUNK_SIZE):
+            end = min(start + BATCH_CHUNK_SIZE, len(doc_ids))
+            chunk_results = _judge_batch_chunk(
+                doc_ids[start:end], doc_texts[start:end], query, model,
+            )
+            all_results.extend(chunk_results)
 
     _save_cache(cache_dir, key, all_results)
     return all_results

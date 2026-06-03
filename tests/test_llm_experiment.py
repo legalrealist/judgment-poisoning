@@ -69,7 +69,7 @@ def _mock_judge_individual(doc_id, doc_text, query, model, cache_dir=None):
     )
 
 
-def _mock_judge_batch(doc_ids, doc_texts, query, model, cache_dir=None):
+def _mock_judge_batch(doc_ids, doc_texts, query, model, cache_dir=None, no_chunk=False):
     return [_mock_judge_individual(d, t, query, model) for d, t in zip(doc_ids, doc_texts)]
 
 
