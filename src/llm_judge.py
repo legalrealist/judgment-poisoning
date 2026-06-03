@@ -62,7 +62,11 @@ def _save_cache(cache_dir: Path, key: str, results: list[JudgmentResult]) -> Non
 
 def _get_anthropic_client():
     import anthropic
-    return anthropic.Anthropic()
+    import os
+    return anthropic.Anthropic(
+        api_key=os.environ["ANTHROPIC_API_KEY"],
+        auth_token="unused",
+    )
 
 
 def _get_openai_client():
@@ -74,7 +78,7 @@ def _call_anthropic(prompt: str, model: str) -> str:
     client = _get_anthropic_client()
     message = client.messages.create(
         model=model,
-        max_tokens=1024,
+        max_tokens=8192,
         messages=[{"role": "user", "content": prompt}],
     )
     return message.content[0].text
@@ -84,7 +88,7 @@ def _call_openai(prompt: str, model: str) -> str:
     client = _get_openai_client()
     response = client.chat.completions.create(
         model=model,
-        max_tokens=1024,
+        max_tokens=8192,
         messages=[{"role": "user", "content": prompt}],
     )
     return response.choices[0].message.content
@@ -96,7 +100,7 @@ def _call_together(prompt: str, model: str) -> str:
     client.api_key = os.environ.get("TOGETHER_API_KEY", "")
     response = client.chat.completions.create(
         model=model,
-        max_tokens=1024,
+        max_tokens=8192,
         messages=[{"role": "user", "content": prompt}],
     )
     return response.choices[0].message.content
@@ -157,6 +161,41 @@ def judge_individual(
     return result
 
 
+BATCH_CHUNK_SIZE = 15
+
+
+def _judge_batch_chunk(
+    doc_ids: list[str],
+    doc_texts: list[str],
+    query: str,
+    model: str,
+) -> list[JudgmentResult]:
+    combined_text = "\n\n".join(
+        f"--- DOCUMENT {doc_id} ---\n{text}" for doc_id, text in zip(doc_ids, doc_texts)
+    )
+    prompt = BATCH_PROMPT.format(query=query, documents=combined_text)
+    response = _call_llm(prompt, model)
+    parsed = _parse_json(response)
+    response_map = {}
+    for entry in parsed:
+        did = entry.get("doc_id", "")
+        response_map[did] = entry
+    results = []
+    for doc_id in doc_ids:
+        if doc_id in response_map:
+            entry = response_map[doc_id]
+            results.append(JudgmentResult(
+                doc_id=doc_id,
+                judgment=entry["judgment"],
+                confidence=float(entry["confidence"]),
+            ))
+        else:
+            results.append(JudgmentResult(
+                doc_id=doc_id, judgment="NOT RELEVANT", confidence=0.0,
+            ))
+    return results
+
+
 def judge_batch(
     doc_ids: list[str],
     doc_texts: list[str],
@@ -175,15 +214,13 @@ def judge_batch(
             r.doc_id = doc_ids[i]
         return cached
 
-    prompt = BATCH_PROMPT.format(query=query, documents=combined_text)
-    response = _call_llm(prompt, model)
-    parsed = _parse_json(response)
-    results = []
-    for i, entry in enumerate(parsed):
-        results.append(JudgmentResult(
-            doc_id=doc_ids[i],
-            judgment=entry["judgment"],
-            confidence=float(entry["confidence"]),
-        ))
-    _save_cache(cache_dir, key, results)
-    return results
+    all_results = []
+    for start in range(0, len(doc_ids), BATCH_CHUNK_SIZE):
+        end = min(start + BATCH_CHUNK_SIZE, len(doc_ids))
+        chunk_results = _judge_batch_chunk(
+            doc_ids[start:end], doc_texts[start:end], query, model,
+        )
+        all_results.extend(chunk_results)
+
+    _save_cache(cache_dir, key, all_results)
+    return all_results
