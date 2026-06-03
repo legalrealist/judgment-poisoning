@@ -66,8 +66,8 @@ class OpenAIEmbedder(Embedder):
 
         client = OpenAI()
         all_embeddings = []
-        for i in range(0, len(texts), 2048):
-            batch = texts[i : i + 2048]
+        for i in range(0, len(texts), 100):
+            batch = texts[i : i + 100]
             response = client.embeddings.create(model=self._model, input=batch)
             all_embeddings.extend([d.embedding for d in response.data])
         return np.array(all_embeddings)

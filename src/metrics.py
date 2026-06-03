@@ -35,7 +35,7 @@ def displacement(
         attack_rank = _rank_of(attack_ranked, doc_id)
         displacements.append(attack_rank - base_rank)
 
-    return np.mean(displacements) if displacements else 0.0
+    return float(np.mean(displacements)) if displacements else 0.0
 
 
 def bootstrap_ci(

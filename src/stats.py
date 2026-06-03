@@ -37,7 +37,7 @@ def compare_conditions(
     condition_a_values: list[float],
     condition_b_values: list[float],
 ) -> dict:
-    """Compare two conditions with full statistical analysis."""
+    """Compare two conditions. Convention: positive mean_diff/cohens_d means a > b."""
     a = np.array(condition_a_values)
     b = np.array(condition_b_values)
     diffs = (a - b).tolist()

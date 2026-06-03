@@ -55,10 +55,10 @@ def build_haystacked_a(
         if doc_id in corpus and corpus[doc_id].custodian:
             key_custodians.add(corpus[doc_id].custodian)
     baseline_set = set(baseline.doc_ids)
-    candidates = [
+    candidates = sorted(
         doc_id for doc_id, email in corpus.items()
         if email.custodian in key_custodians and doc_id not in baseline_set
-    ]
+    )
     hay = candidates[:hay_count]
     return ConditionSet(
         name="haystacked_a",
@@ -178,10 +178,10 @@ def build_dilution_control(
         if doc_id in corpus and corpus[doc_id].custodian:
             involved_custodians.add(corpus[doc_id].custodian)
     baseline_set = set(baseline.doc_ids)
-    candidates = [
+    candidates = sorted(
         doc_id for doc_id, email in corpus.items()
         if doc_id not in baseline_set and email.custodian not in involved_custodians
-    ]
+    )
     hay = candidates[:hay_count]
     return ConditionSet(
         name="dilution_control",
