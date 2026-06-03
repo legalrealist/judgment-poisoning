@@ -19,7 +19,14 @@ class EnronEmail:
     bcc: str = ""
 
     def to_text(self) -> str:
-        """Render as plain text for embedding."""
+        """Render as plain text for embedding.
+
+        If the body already contains email headers (from EDRM text extraction),
+        return it directly to avoid duplication. Otherwise, prepend structured
+        metadata.
+        """
+        if self.body and self.body.lstrip().startswith(("Date:", "From:", "To:", "Subject:")):
+            return self.body
         parts = []
         if self.subject:
             parts.append(f"Subject: {self.subject}")
