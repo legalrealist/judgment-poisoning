@@ -195,6 +195,26 @@ Every LLM call cached to disk. The cache key is (model, document content hash, q
 - Add remaining scales
 - Full statistical analysis
 
+## Related Work
+
+The underlying phenomenon — topically similar noise degrades LLM accuracy — is established across several research threads. This experiment applies those findings to a specific high-stakes domain (eDiscovery) where the attack is already a routine litigation tactic.
+
+**RAG robustness to irrelevant context:**
+- Wu et al. (COLM 2024) — LLMs are more easily misled by semantically related irrelevant information than by unrelated noise. Directly supports the hypothesis that topical hay is worse than random dilution. [arXiv:2404.03302](https://arxiv.org/abs/2404.03302)
+- Amiraz et al. (ACL 2025) — "The Distracting Effect": quantifies how irrelevant retrieved passages distract RAG answer generation, identifies "hard distracting passages" (topically similar but irrelevant). [arXiv:2505.06914](https://arxiv.org/abs/2505.06914)
+- Chroma "Context Rot" (2025) — 20-50% accuracy drops across 18 models (GPT-4.1, Claude Opus 4, Gemini 2.5 Pro) as context grows. Coherent distractors are worse than shuffled ones — structural plausibility hurts. This is architectural, not a training gap. [research.trychroma.com/context-rot](https://research.trychroma.com/context-rot)
+- Lee et al. (2026) — "Lost in the Noise": up to 80% performance drop with contextual distractors, even in reasoning models. Inverse scaling: more test-time compute makes noisy performance worse. [arXiv:2601.07226](https://arxiv.org/abs/2601.07226)
+
+**LLM-as-judge bias:**
+- Shan et al. (2024) — LLMs judging relevance in batches exhibit threshold priming: preceding documents shift the relevance threshold for later ones. Tested on GPT-3.5, GPT-4, LLaMA2. [arXiv:2409.16022](https://arxiv.org/abs/2409.16022)
+- Yu et al. (2026) — LLM judges systematically overrate passages that don't satisfy the information need, driven by passage length and surface lexical cues. [arXiv:2602.17170](https://arxiv.org/abs/2602.17170)
+- Alaofi et al. (SIGIR-AP 2024) — LLMs can be fooled into labelling documents as relevant via keyword stuffing. [arXiv:2501.17969](https://arxiv.org/abs/2501.17969)
+
+**Positional bias in long context:**
+- Liu et al. (2023) — "Lost in the Middle": U-shaped attention bias, 30%+ accuracy drop for middle-positioned information. [arXiv:2307.03172](https://arxiv.org/abs/2307.03172)
+
+**Gap:** No prior work tests these effects in the eDiscovery context, where strategic over-production is legal, routine, and the requesting party's AI review tool is the target.
+
 ## What This Does NOT Cover
 
 - Prompt injection attacks (out of scope — well-studied separately)
