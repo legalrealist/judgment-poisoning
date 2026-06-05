@@ -88,7 +88,9 @@ def step_conditions(topic_id: str):
 
     judgments = judgments_all[topic_id]
     baseline = build_baseline(corpus, judgments)
+    candidate_pool = judgments.non_relevant & set(corpus.keys())
     print(f"  Baseline: {len(baseline)} docs ({len(judgments.key_documents())} key)")
+    print(f"  Candidate pool: {len(candidate_pool)} assessed non-relevant docs in corpus")
 
     for scale_name, multiplier in SCALES.items():
         if multiplier == 0:
@@ -101,8 +103,8 @@ def step_conditions(topic_id: str):
         hay_count = multiplier * len(baseline)
         print(f"  Scale {scale_name}: {hay_count} hay docs")
 
-        cond_a = build_haystacked_a(corpus, judgments, baseline, hay_count)
-        cond_b = build_haystacked_b(corpus, judgments, baseline, hay_count)
+        cond_a = build_haystacked_a(corpus, judgments, baseline, hay_count, candidate_pool)
+        cond_b = build_haystacked_b(corpus, judgments, baseline, hay_count, candidate_pool)
 
         print(f"    Embedding for condition C selection...")
         embedder = get_embedder("openai/text-embedding-3-large")
@@ -111,8 +113,8 @@ def step_conditions(topic_id: str):
         all_embeddings = embedder.embed_documents(all_doc_ids, all_texts)
         emb_dict = dict(zip(all_doc_ids, all_embeddings.tolist()))
 
-        cond_c = build_haystacked_c(corpus, judgments, baseline, hay_count, emb_dict)
-        control = build_dilution_control(corpus, judgments, baseline, len(cond_c) - len(baseline))
+        cond_c = build_haystacked_c(corpus, judgments, baseline, hay_count, emb_dict, candidate_pool)
+        control = build_dilution_control(corpus, judgments, baseline, len(cond_c) - len(baseline), candidate_pool)
 
         out_dir = CONDITIONS_DIR / topic_id / scale_name
         out_dir.mkdir(parents=True, exist_ok=True)

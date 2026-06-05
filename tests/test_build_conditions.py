@@ -71,7 +71,8 @@ def test_build_haystacked_a():
     corpus = _make_corpus()
     judgments = _make_judgments()
     baseline = build_baseline(corpus, judgments)
-    condition = build_haystacked_a(corpus, judgments, baseline, hay_count=3)
+    pool = judgments.non_relevant & set(corpus.keys())
+    condition = build_haystacked_a(corpus, judgments, baseline, hay_count=3, candidate_pool=pool)
     for doc_id in baseline.doc_ids:
         assert doc_id in condition.doc_ids
     smith_hay = [d for d in condition.doc_ids if d.startswith("smith_boring")]
@@ -83,7 +84,8 @@ def test_build_haystacked_b():
     corpus = _make_corpus()
     judgments = _make_judgments()
     baseline = build_baseline(corpus, judgments)
-    condition = build_haystacked_b(corpus, judgments, baseline, hay_count=3)
+    pool = judgments.non_relevant & set(corpus.keys())
+    condition = build_haystacked_b(corpus, judgments, baseline, hay_count=3, candidate_pool=pool)
     for doc_id in baseline.doc_ids:
         assert doc_id in condition.doc_ids
     kw_hay = [d for d in condition.doc_ids if d.startswith("kw_")]
@@ -112,7 +114,8 @@ def test_build_haystacked_c():
         "offtopic_3": [0.15, 0.85],
     }
 
-    condition = build_haystacked_c(corpus, judgments, baseline, hay_count=3, embeddings=embeddings)
+    pool = judgments.non_relevant & set(corpus.keys())
+    condition = build_haystacked_c(corpus, judgments, baseline, hay_count=3, embeddings=embeddings, candidate_pool=pool)
 
     for doc_id in baseline.doc_ids:
         assert doc_id in condition.doc_ids
@@ -124,11 +127,24 @@ def test_build_haystacked_c():
         assert doc_id in {"kw_1", "kw_2", "kw_3"}
 
 
+def test_hay_docs_only_from_candidate_pool():
+    corpus = _make_corpus()
+    judgments = _make_judgments()
+    baseline = build_baseline(corpus, judgments)
+    restricted_pool = {"smith_boring_1", "offtopic_1"}
+    cond_a = build_haystacked_a(corpus, judgments, baseline, hay_count=10, candidate_pool=restricted_pool)
+    cond_b = build_haystacked_b(corpus, judgments, baseline, hay_count=10, candidate_pool=restricted_pool)
+    for cond in [cond_a, cond_b]:
+        hay_ids = set(cond.doc_ids) - set(baseline.doc_ids)
+        assert hay_ids <= restricted_pool
+
+
 def test_build_dilution_control_excludes_relevant_custodians():
     corpus = _make_corpus()
     judgments = _make_judgments()
     baseline = build_baseline(corpus, judgments)
-    condition = build_dilution_control(corpus, judgments, baseline, hay_count=3)
+    pool = judgments.non_relevant & set(corpus.keys())
+    condition = build_dilution_control(corpus, judgments, baseline, hay_count=3, candidate_pool=pool)
     for doc_id in baseline.doc_ids:
         assert doc_id in condition.doc_ids
     hay_ids = set(condition.doc_ids) - set(baseline.doc_ids)

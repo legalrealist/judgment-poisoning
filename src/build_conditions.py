@@ -48,6 +48,7 @@ def build_haystacked_a(
     judgments: TopicJudgments,
     baseline: ConditionSet,
     hay_count: int,
+    candidate_pool: set[str],
 ) -> ConditionSet:
     key_doc_ids = judgments.key_documents()
     key_custodians = set()
@@ -56,8 +57,10 @@ def build_haystacked_a(
             key_custodians.add(corpus[doc_id].custodian)
     baseline_set = set(baseline.doc_ids)
     candidates = sorted(
-        doc_id for doc_id, email in corpus.items()
-        if email.custodian in key_custodians and doc_id not in baseline_set
+        doc_id for doc_id in candidate_pool
+        if doc_id in corpus
+        and corpus[doc_id].custodian in key_custodians
+        and doc_id not in baseline_set
     )
     hay = candidates[:hay_count]
     return ConditionSet(
@@ -101,14 +104,16 @@ def build_haystacked_b(
     judgments: TopicJudgments,
     baseline: ConditionSet,
     hay_count: int,
+    candidate_pool: set[str],
 ) -> ConditionSet:
     key_emails = [corpus[d] for d in judgments.key_documents() if d in corpus]
     keywords = _extract_keywords(key_emails)
     baseline_set = set(baseline.doc_ids)
     scored = []
-    for doc_id, email in corpus.items():
-        if doc_id in baseline_set:
+    for doc_id in candidate_pool:
+        if doc_id in baseline_set or doc_id not in corpus:
             continue
+        email = corpus[doc_id]
         text = f"{email.subject} {email.body}".lower()
         words = set(re.findall(r"[a-z]+", text))
         overlap = len(words & keywords)
@@ -135,6 +140,7 @@ def build_haystacked_c(
     baseline: ConditionSet,
     hay_count: int,
     embeddings: dict[str, list[float]],
+    candidate_pool: set[str],
 ) -> ConditionSet:
     import numpy as np
     from sklearn.metrics.pairwise import cosine_similarity
@@ -142,7 +148,7 @@ def build_haystacked_c(
     key_doc_ids = sorted(judgments.key_documents() & set(corpus.keys()))
     baseline_set = set(baseline.doc_ids)
     key_vecs = np.array([embeddings[d] for d in key_doc_ids])
-    candidates = [d for d in corpus if d not in baseline_set and d in embeddings]
+    candidates = [d for d in candidate_pool if d not in baseline_set and d in embeddings]
     if not candidates:
         return ConditionSet(
             name="haystacked_c",
@@ -172,6 +178,7 @@ def build_dilution_control(
     judgments: TopicJudgments,
     baseline: ConditionSet,
     hay_count: int,
+    candidate_pool: set[str],
 ) -> ConditionSet:
     involved_custodians = set()
     for doc_id in baseline.doc_ids:
@@ -179,8 +186,10 @@ def build_dilution_control(
             involved_custodians.add(corpus[doc_id].custodian)
     baseline_set = set(baseline.doc_ids)
     candidates = sorted(
-        doc_id for doc_id, email in corpus.items()
-        if doc_id not in baseline_set and email.custodian not in involved_custodians
+        doc_id for doc_id in candidate_pool
+        if doc_id in corpus
+        and doc_id not in baseline_set
+        and corpus[doc_id].custodian not in involved_custodians
     )
     hay = candidates[:hay_count]
     return ConditionSet(

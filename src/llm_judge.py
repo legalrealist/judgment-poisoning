@@ -64,9 +64,9 @@ def _save_cache(cache_dir: Path, key: str, results: list[JudgmentResult]) -> Non
 def _get_anthropic_client():
     import anthropic
     import os
+    os.environ.pop("ANTHROPIC_AUTH_TOKEN", None)
     return anthropic.Anthropic(
         api_key=os.environ["ANTHROPIC_API_KEY"],
-        auth_token="unused",
     )
 
 
