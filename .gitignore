@@ -1,6 +1,7 @@
 # Data (too large for git)
 corpus/enron/raw/
 corpus/enron/parsed/
+corpus/enron/trec_judgments/qrels.t10legallearn
 embeddings/
 
 # Python
