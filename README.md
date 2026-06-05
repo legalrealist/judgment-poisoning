@@ -29,6 +29,10 @@ Same task, same documents, same model. The textual-criteria prompt produces 93-9
 
 "Does this contain an admission?" is an observable predicate — the answer is in the text. The LLM reads text reliably.
 
+## Caveat
+
+This is a demonstration experiment, not a real vulnerability finding. Well-designed eDiscovery platforms almost certainly already handle this — their system prompts decompose user-facing review instructions ("find the hot docs") into specific textual predicates before the LLM sees any documents. The user defines the legal judgment; the system operationalizes it. This experiment just isolates and measures why that step matters: it's not a nice-to-have, it's the primary determinant of classifier reliability. If you're building on top of LLMs for document review and you're passing user prompts straight through, this is the failure mode.
+
 ## Data
 
 - **Corpus:** EDRM Enron v2, ~638K emails, 149 custodians
