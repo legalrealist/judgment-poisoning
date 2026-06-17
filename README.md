@@ -13,6 +13,8 @@ When classifying litigation documents as KEY (smoking gun) or ROUTINE (responsiv
 
 Binary relevance classification (RELEVANT vs. NOT RELEVANT) was 98% stable — the instability is specific to unconstrained salience judgments.
 
+![Bar chart: a strategic prompt ("would a trial lawyer flag this?") produces 60–95% classification instability, while a textual-criteria prompt ("contains an admission, a decision, …") produces only 3–7% — same task, same documents, same model](assets/instability.png)
+
 ## Two prompt styles
 
 **Strategic prompt** — asks the LLM to simulate expert judgment:
