@@ -60,3 +60,15 @@ Key modules:
 - `src/embed.py` — Multi-model embedding interface (OpenAI, Cohere, Voyage, Google, Jina, Contriever, BGE, E5)
 
 The repo also contains the retrieval-layer experiments (embedding displacement, BM25 comparison) that motivated the stability finding — the haystacking attack failed at the judgment layer, which led to the prompt-framing discovery.
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+```
+
+Embedding and LLM-judge steps require the relevant provider API keys (OpenAI / Cohere / Voyage / Google / Jina for embeddings; Anthropic for the judge). See the run steps above for the staged pipeline.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
